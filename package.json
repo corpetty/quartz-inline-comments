@@ -1,0 +1,118 @@
+{
+  "name": "quartz-inline-comments",
+  "version": "0.1.0",
+  "description": "Inline, anchored comments for Quartz backed by GitHub Discussions.",
+  "type": "module",
+  "license": "MIT",
+  "author": "Corey Petty",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/corpetty/quartz-inline-comments"
+  },
+  "keywords": [
+    "quartz",
+    "quartz-plugin",
+    "comments",
+    "annotations",
+    "github-discussions"
+  ],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./types": {
+      "types": "./dist/types.d.ts",
+      "import": "./dist/types.js"
+    },
+    "./components": {
+      "types": "./dist/components/index.d.ts",
+      "import": "./dist/components/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "format": "prettier . --check"
+  },
+  "peerDependencies": {
+    "preact": "^10.0.0"
+  },
+  "peerDependenciesMeta": {
+    "preact": {
+      "optional": false
+    }
+  },
+  "dependencies": {
+    "@floating-ui/dom": "^1.7.4",
+    "@quartz-community/types": "github:quartz-community/types",
+    "@quartz-community/utils": "github:quartz-community/utils"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "preact": "^10.28.2",
+    "prettier": "^3.6.2",
+    "sass": "^1.97.3",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.3"
+  },
+  "quartz": {
+    "name": "inline-comments",
+    "displayName": "Inline Comments",
+    "category": "component",
+    "version": "0.1.0",
+    "quartzVersion": ">=5.0.0",
+    "dependencies": [],
+    "defaultOrder": 50,
+    "defaultEnabled": true,
+    "defaultOptions": {
+      "mapping": "url"
+    },
+    "components": {
+      "InlineComments": {
+        "displayName": "Inline Comments",
+        "defaultPosition": "afterBody",
+        "defaultPriority": 50
+      }
+    },
+    "optionSchema": {
+      "repo": {
+        "type": "string"
+      },
+      "repoId": {
+        "type": "string"
+      },
+      "category": {
+        "type": "string"
+      },
+      "categoryId": {
+        "type": "string"
+      },
+      "apiBase": {
+        "type": "string"
+      },
+      "mapping": {
+        "type": "enum",
+        "values": [
+          "url",
+          "pathname",
+          "title"
+        ]
+      }
+    }
+  },
+  "engines": {
+    "node": ">=22",
+    "npm": ">=10.9.2"
+  }
+}
