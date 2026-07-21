@@ -9,7 +9,7 @@ import style from "./styles/inlineComments.scss";
 import script from "./scripts/inlineComments.inline.ts";
 
 export interface InlineCommentsOptions {
-  // owner/name of the repo holding the Discussions, e.g. "logos-co/assembly"
+  // owner/name of the repo holding the Discussions, e.g. "you/your-repo"
   repo?: string;
   // GraphQL node id of the repo (data-repo-id in giscus config)
   repoId?: string;

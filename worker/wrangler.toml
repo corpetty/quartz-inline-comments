@@ -1,0 +1,23 @@
+# Rename this to whatever you want the worker to be called. The deployed URL
+# becomes https://<name>.<your-subdomain>.workers.dev — that URL is what you
+# put in the plugin's `apiBase` option.
+name = "inline-comments"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+
+# Public site origin(s) allowed to use this worker (comma-separated).
+# Used for CORS on /api/comments and as the postMessage target on auth callback.
+#
+# NOTE: origins only — scheme + host, no path and no trailing slash. If your
+# site is served from a subpath (e.g. https://you.github.io/notes/), the origin
+# is still the bare host: https://you.github.io
+#
+# Changing these requires a redeploy (`npx wrangler deploy`); secrets do not.
+# http://localhost:8080 is Quartz's dev server, keep it for local development.
+[vars]
+ALLOWED_ORIGINS = "https://example.com,http://localhost:8080"
+
+# Secrets are NOT set here. Set them with:
+#   npx wrangler secret put GITHUB_CLIENT_ID
+#   npx wrangler secret put GITHUB_CLIENT_SECRET
+#   npx wrangler secret put GITHUB_TOKEN

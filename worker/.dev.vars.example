@@ -1,0 +1,4 @@
+# Copy to `.dev.vars` for local `wrangler dev` (git-ignored).
+GITHUB_CLIENT_ID=your_oauth_app_client_id
+GITHUB_CLIENT_SECRET=your_oauth_app_client_secret
+GITHUB_TOKEN=your_fine_grained_pat_with_discussions_read

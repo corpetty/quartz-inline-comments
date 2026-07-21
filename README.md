@@ -5,26 +5,37 @@ attached to a specific text selection (Medium margin-notes / Hypothes.is style),
 not just one thread at the bottom of the page. Backed by **GitHub Discussions**,
 authenticated with a **GitHub App**.
 
-See [`docs-internal/inline-comments-design.md`](https://github.com/logos-co/assembly/blob/v5/docs-internal/inline-comments-design.md)
-for the full design, and
-[`inline-comments-v5-plugin-migration.md`](https://github.com/logos-co/assembly/blob/v5/docs-internal/inline-comments-v5-plugin-migration.md)
-for how this plugin was extracted from the v4 site component.
+## Repo layout
+
+This repo is self-contained — both halves of the system live here:
+
+| Path        | What                                                              |
+| ----------- | ----------------------------------------------------------------- |
+| `src/`      | the Quartz 5 plugin (browser half: component, styles, client JS)  |
+| `worker/`   | the companion Cloudflare Worker (auth + anonymous read proxy)     |
 
 ## Requires the worker
 
-This component is the browser half. It needs the companion serverless worker
-([`serverless/inline-comments-worker`](https://github.com/logos-co/assembly/tree/v5/serverless/inline-comments-worker))
-deployed for auth and anonymous reads. If `apiBase` is empty the component
-no-ops (the site builds and renders, just without inline UI).
+`src/` is only the browser half. It needs the companion serverless worker in
+[`worker/`](./worker) deployed for auth and anonymous reads — it holds the two
+secrets that can't live in the browser. See
+[`worker/README.md`](./worker/README.md) for the full deploy walkthrough.
+
+If `apiBase` is empty the component no-ops (the site builds and renders, just
+without inline UI), so it's safe to install the plugin before the worker exists.
+
+The worker is generic: repo, category, and page term arrive as query parameters
+from the client, so one deployment can serve any site. The only
+deployment-specific config is `ALLOWED_ORIGINS` and three secrets.
 
 ## Install
-
-While developing in this repo it is wired as a **local** plugin source
-(`./plugins/inline-comments`). Published, it installs like any community plugin:
 
 ```sh
 npx quartz plugin add github:corpetty/quartz-inline-comments
 ```
+
+Then deploy the worker (see [`worker/README.md`](./worker/README.md)) and set
+`apiBase` to the deployed URL.
 
 ## Configure
 
@@ -32,14 +43,14 @@ In `quartz.config.yaml`:
 
 ```yaml
 plugins:
-  - source: ./plugins/inline-comments # or github:corpetty/quartz-inline-comments
+  - source: github:corpetty/quartz-inline-comments
     enabled: true
     options:
-      repo: logos-co/assembly
-      repoId: R_kgDOQUhKqA
+      repo: you/your-repo
+      repoId: R_kgDO…
       category: Announcements
-      categoryId: DIC_kwDOQUhKqM4Cxur2
-      apiBase: https://inline-comments.inline-assembly.workers.dev
+      categoryId: DIC_kwDO…
+      apiBase: https://<name>.<your-subdomain>.workers.dev
       mapping: url # match giscus's mapping to share the same discussion
 ```
 
