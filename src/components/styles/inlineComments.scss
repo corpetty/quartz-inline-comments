@@ -30,6 +30,19 @@
   }
 }
 
+// Dark mode: the muted --tertiary at low opacity is nearly invisible on the
+// dark background, so use a stronger fill and a brighter underline. The
+// article text (--darkgray, a light grey in dark mode) stays readable over it.
+:root[saved-theme="dark"] .inline-comment-highlight {
+  background-color: color-mix(in srgb, var(--tertiary) 45%, rgba(255, 255, 255, 0));
+  border-bottom-color: color-mix(in srgb, var(--tertiary) 65%, white);
+
+  &:hover,
+  &.active {
+    background-color: color-mix(in srgb, var(--tertiary) 65%, rgba(255, 255, 255, 0));
+  }
+}
+
 // ─── floating "add comment" button that follows a selection ─────────────
 .inline-comment-add {
   // must match the `strategy: "fixed"` used by computePosition — with
