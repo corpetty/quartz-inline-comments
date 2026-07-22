@@ -32,15 +32,30 @@ No `scope` is sent on the authorize URL as a result.
 
 ## 1. Deploy the worker (Cloudflare Workers)
 
+You do **not** need to clone this repo separately. Installing the plugin already
+put the worker on disk, inside your Quartz site:
+
 ```sh
-cd worker
+cd .quartz/plugins/quartz-inline-comments/worker
 npm install
 npx wrangler login     # first run also prompts you to pick your workers.dev subdomain
-npx wrangler deploy    # prints the URL
+
+# Set your site's origin at deploy time (see the warning below)
+npx wrangler deploy --var ALLOWED_ORIGINS:"https://your-site.com,http://localhost:8080"
 ```
 
 The printed URL is `https://<name>.<your-subdomain>.workers.dev`, where `<name>`
 is `name` in `wrangler.toml`. Save it — it becomes the plugin's `apiBase`.
+
+> [!warning] Don't edit files under `.quartz/plugins/`
+> That directory is generated and git-ignored: `npx quartz plugin install`
+> re-clones it and **your edits are gone**. So don't hand-edit `wrangler.toml`
+> there — pass `--var ALLOWED_ORIGINS:"…"` on deploy instead, as above. The
+> value is baked into the deployed worker, so it survives regardless of what
+> happens to the local checkout.
+>
+> If you'd rather keep the config in version control, copy `worker/` out to
+> your own repo and deploy from there.
 
 ## 2. Create a GitHub App
 
@@ -94,18 +109,19 @@ npx wrangler secret put GITHUB_CLIENT_SECRET
 npx wrangler secret put GITHUB_TOKEN
 ```
 
-Secrets apply immediately. `ALLOWED_ORIGINS` lives in `wrangler.toml` `[vars]`
-and **requires a redeploy** to take effect. Set it to your site's origin
-(scheme + host, no path):
+Secrets apply immediately and persist across redeploys.
 
-```toml
-[vars]
-ALLOWED_ORIGINS = "https://your-site.com,http://localhost:8080"
-```
+`ALLOWED_ORIGINS` is a var, not a secret, so it **requires a redeploy** to
+change. Set it to your site's origin — scheme + host, no path, no trailing
+slash — and re-pass it on every deploy:
 
 ```sh
-npx wrangler deploy
+npx wrangler deploy --var ALLOWED_ORIGINS:"https://your-site.com,http://localhost:8080"
 ```
+
+If you get a CORS failure in the browser, check the response's
+`access-control-allow-origin` header: if it still says `https://example.com`
+(the placeholder in `wrangler.toml`), the `--var` didn't take.
 
 ### Local dev
 

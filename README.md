@@ -34,8 +34,24 @@ deployment-specific config is `ALLOWED_ORIGINS` and three secrets.
 npx quartz plugin add github:corpetty/quartz-inline-comments
 ```
 
-Then deploy the worker (see [`worker/README.md`](./worker/README.md)) and set
-`apiBase` to the deployed URL.
+That clones the whole repo — **worker included** — into your site at
+`.quartz/plugins/quartz-inline-comments/`. There is no second repo to clone;
+deploy the worker straight from there:
+
+```sh
+cd .quartz/plugins/quartz-inline-comments/worker
+npm install
+npx wrangler deploy --var ALLOWED_ORIGINS:"https://your-site.com,http://localhost:8080"
+```
+
+Then set `apiBase` to the printed URL. Full walkthrough (GitHub App, secrets)
+in [`worker/README.md`](./worker/README.md).
+
+> [!note]
+> `.quartz/plugins/` is generated and git-ignored — `quartz plugin install`
+> re-clones it, discarding local edits. Configure the worker via `--var` and
+> `wrangler secret` (both live in the deployment, not the checkout) rather than
+> by editing files there.
 
 ## Configure
 
