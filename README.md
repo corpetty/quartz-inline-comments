@@ -100,3 +100,14 @@ npm install
 npm run build       # tsup → dist/ (ESM + d.ts)
 npm run typecheck
 ```
+
+> [!important] `dist/` is committed on purpose
+> Quartz 5 uses a plugin's committed `dist/` directly and skips the
+> install-and-build cycle, so installs are near-instant instead of taking
+> ~10s. The trade-off is that `dist/` can go stale: if you change anything in
+> `src/` and don't rebuild, every site installing this plugin silently keeps
+> getting the old code.
+>
+> **Run `npm run build` and commit `dist/` in the same commit as any `src/`
+> change.** If you'd rather not, re-adding `dist/` to `.gitignore` restores the
+> slower build-on-install behavior, which cannot go stale.

@@ -1,6 +1,9 @@
 node_modules/
-dist/
 *.tsbuildinfo
+
+# NOTE: dist/ is intentionally NOT ignored. Quartz 5 uses a plugin's committed
+# dist/ directly and skips the install+build cycle, making installs near-instant.
+# Run `npm run build` and commit the result whenever you change src/.
 
 # Cloudflare Worker local secrets + state — never commit these.
 # .dev.vars holds the GitHub App client secret and the server read PAT.
