@@ -1,0 +1,77 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  plugin:
+    name: Plugin (typecheck + dist freshness)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Rebuild dist/
+        run: npm run build
+
+      # Quartz installs this plugin straight from the committed dist/ and skips
+      # the build step, so a dist/ that lags behind src/ ships old code to every
+      # site silently. Rebuilding and diffing is what turns that into a loud
+      # failure here instead of a quiet one downstream.
+      - name: Verify committed dist/ matches src/
+        run: |
+          if git diff --quiet -- dist/; then
+            echo "dist/ is up to date."
+            exit 0
+          fi
+          echo "::error title=Stale dist/::dist/ does not match a fresh build of src/"
+          {
+            echo "### :x: \`dist/\` is stale"
+            echo
+            echo "Quartz installs this plugin from the **committed \`dist/\`** and skips the"
+            echo "build step, so leaving it stale means every site silently keeps running the"
+            echo "old code."
+            echo
+            echo "**Fix:** run \`npm run build\` and commit \`dist/\` in the same commit as your"
+            echo "\`src/\` change."
+            echo
+            echo "Files that differ:"
+            echo '```'
+            git diff --stat -- dist/
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          git diff --stat -- dist/
+          exit 1
+
+  worker:
+    name: Worker (typecheck)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: worker/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: worker
+
+      - name: Typecheck
+        run: npm run typecheck
+        working-directory: worker
